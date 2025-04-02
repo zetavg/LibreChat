@@ -734,7 +734,7 @@ class BaseClient {
     }
 
     responseMessage.databasePromise = this.saveMessageToDatabase(
-      responseMessage,
+      { ...responseMessage, tmp_usage: this.usage },
       saveOptions,
       user,
     );

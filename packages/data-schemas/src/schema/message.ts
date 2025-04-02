@@ -157,6 +157,9 @@ const messageSchema: Schema<IMessage> = new Schema(
     expiredAt: {
       type: Date,
     },
+    tmp_usage: {
+      type: Object,
+    },
   },
   { timestamps: true },
 );
