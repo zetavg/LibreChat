@@ -190,6 +190,7 @@ const AskController = async (req, res, next, initializeClient, addTitle) => {
     const databasePromise = response.databasePromise;
     delete response.databasePromise;
 
+    const usage = { ...client.usage };
     const { conversation: convoData = {} } = await databasePromise;
     const conversation = { ...convoData };
     conversation.title =
@@ -213,14 +214,14 @@ const AskController = async (req, res, next, initializeClient, addTitle) => {
         conversation,
         title: conversation.title,
         requestMessage: latestUserMessage,
-        responseMessage: finalResponseMessage,
+        responseMessage: { ...finalResponseMessage, tmp_usage: usage },
       });
       res.end();
 
       if (client?.savedMessageIds && !client.savedMessageIds.has(response.messageId)) {
         await saveMessage(
           req,
-          { ...finalResponseMessage, user: userId },
+          { ...finalResponseMessage, user: userId, usage },
           { context: 'api/server/controllers/AskController.js - response end' },
         );
       }
