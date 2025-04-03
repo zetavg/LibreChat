@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import { memo, useRef, useMemo, useEffect, useState, useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -33,6 +34,7 @@ import EditBadges from './EditBadges';
 import BadgeRow from './BadgeRow';
 import Mention from './Mention';
 import store from '~/store';
+import { CheckboxIcon } from '@radix-ui/react-icons';
 
 const ChatForm = memo(({ index = 0 }: { index?: number }) => {
   const submitButtonRef = useRef<HTMLButtonElement>(null);
@@ -312,6 +314,26 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
                 }
               />
               <div className="mx-auto flex" />
+              <div className="flex items-center gap-2">
+                <label htmlFor="mock-response-checkbox" className="flex items-center text-sm">
+                  <input
+                    type="checkbox"
+                    id="mock-response-checkbox"
+                    className="mr-1"
+                    checked={
+                      document.cookie
+                        .split('; ')
+                        .find((row) => row.startsWith('mockResponse='))
+                        ?.split('=')[1] === 'true'
+                    }
+                    onChange={(e) => {
+                      console.log('Mock response:', e.target.checked);
+                      document.cookie = `mockResponse=${e.target.checked}; path=/;`;
+                    }}
+                  />
+                  Mock Response
+                </label>
+              </div>
               {SpeechToText && (
                 <AudioRecorder
                   methods={methods}
