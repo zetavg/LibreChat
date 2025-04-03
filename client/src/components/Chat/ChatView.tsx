@@ -74,6 +74,8 @@ function ChatView({ index = 0 }: { index?: number }) {
     content = <Landing centerFormOnLanding={centerFormOnLanding} />;
   }
 
+  const conversationCost = calculateTotalCost(messagesTree);
+
   return (
     <ChatFormProvider {...methods}>
       <ChatContext.Provider value={chatHelpers}>
@@ -98,7 +100,11 @@ function ChatView({ index = 0 }: { index?: number }) {
                     )}
                   >
                     <ChatForm index={index} />
-                    {isLandingPage ? <ConversationStarters /> : <Footer />}
+                    {isLandingPage ? <ConversationStarters /> : <Footer
+                      additionalText={
+                        conversationCost > 0 ? `Conversation Cost: $${conversationCost.toFixed(3)}` : undefined
+                      }
+                    />}
                   </div>
                 </div>
                 {isLandingPage && <Footer />}
@@ -109,6 +115,18 @@ function ChatView({ index = 0 }: { index?: number }) {
       </ChatContext.Provider>
     </ChatFormProvider>
   );
+}
+
+function calculateTotalCost(messagesTree?: TMessage[] | null): number {
+  if (!messagesTree) {
+    return 0;
+  }
+
+  return messagesTree
+    .map((msg) => {
+      return ((msg as any)?.tmp_usage?.cost || 0) + calculateTotalCost(msg?.children);
+    })
+    .reduce((acc, curr) => acc + curr, 0);
 }
 
 export default memo(ChatView);
